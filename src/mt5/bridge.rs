@@ -166,11 +166,12 @@ impl MT5BridgeClient {
             .await
             .context("Failed to send order to bridge")?;
         
-        if !response.status().is_success() {
+        let status = response.status();
+        if !status.is_success() {
             let error_text = response.text().await.unwrap_or_default();
             return Err(anyhow::anyhow!(
                 "Bridge returned error: {} - {}",
-                response.status(),
+                status,
                 error_text
             ));
         }

@@ -3,7 +3,7 @@
 use axum::{extract::{Path, State}, http::StatusCode, Json};
 use serde::{Deserialize, Serialize};
 use crate::AppState;
-use crate::models::MT5Order;
+use crate::MT5Order;
 
 #[derive(Deserialize)]
 pub struct CreateOrderRequest {

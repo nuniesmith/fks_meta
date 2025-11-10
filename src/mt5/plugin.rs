@@ -27,14 +27,14 @@ pub struct ExecutionResult {
 }
 
 /// Order side matching fks_execution interface
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OrderSide {
     Buy,
     Sell,
 }
 
 /// Order type matching fks_execution interface
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OrderType {
     Market,
     Limit,
@@ -132,6 +132,11 @@ impl ExecutionPlugin for MT5Plugin {
             .ok_or("Plugin not initialized")?;
         
         // Convert FKS Order to MT5 Order format
+        // Clone values needed for logging before moving order
+        let symbol = order.symbol.clone();
+        let side = order.side;
+        let quantity = order.quantity;
+        
         let mt5_order_type = match (order.side, order.order_type) {
             (OrderSide::Buy, OrderType::Market) => "OP_BUY".to_string(),
             (OrderSide::Sell, OrderType::Market) => "OP_SELL".to_string(),
@@ -144,7 +149,7 @@ impl ExecutionPlugin for MT5Plugin {
         
         let mt5_order = crate::models::MT5Order {
             ticket: 0, // Will be assigned by MT5
-            symbol: order.symbol.clone(),
+            symbol: order.symbol,
             order_type: mt5_order_type,
             volume: order.quantity,
             price: order.price.unwrap_or(0.0),
@@ -157,9 +162,9 @@ impl ExecutionPlugin for MT5Plugin {
         
         info!(
             plugin = %self.name,
-            symbol = %order.symbol,
-            side = ?order.side,
-            quantity = %order.quantity,
+            symbol = %symbol,
+            side = ?side,
+            quantity = %quantity,
             "Executing order via MT5"
         );
         

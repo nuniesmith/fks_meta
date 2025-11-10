@@ -15,26 +15,13 @@ use std::sync::Arc;
 use tokio::signal;
 use tracing::{info, error};
 
-mod api;
-mod config;
-mod models;
-mod mt5;
-
-use config::Settings;
-use mt5::MT5Client;
+use fks_meta::{AppState, Settings, MT5Client};
 
 #[derive(Parser, Debug)]
 #[command(version, about = "FKS Meta - MetaTrader 5 Plugin Service")]
 struct Cli {
     #[arg(long, default_value = "0.0.0.0:8005")]
     listen: String,
-}
-
-// Make AppState available to API modules
-#[derive(Clone)]
-pub struct AppState {
-    pub mt5_client: Arc<MT5Client>,
-    pub settings: Arc<Settings>,
 }
 
 #[tokio::main]
@@ -61,16 +48,16 @@ async fn main() -> anyhow::Result<()> {
 
     // Build router
     let app = Router::new()
-        .route("/health", get(api::health::health_check))
-        .route("/metrics", get(api::health::metrics))
-        .route("/status", get(api::health::mt5_status))
-        .route("/orders", post(api::orders::create_order))
-        .route("/orders/:order_id", get(api::orders::get_order))
-        .route("/orders/:order_id", delete(api::orders::cancel_order))
-        .route("/positions", get(api::positions::list_positions))
-        .route("/positions/:symbol", get(api::positions::get_position))
-        .route("/positions/:symbol", delete(api::positions::close_position))
-        .route("/market/:symbol", get(api::market::get_market_data))
+        .route("/health", get(fks_meta::api::health::health_check))
+        .route("/metrics", get(fks_meta::api::health::metrics))
+        .route("/status", get(fks_meta::api::health::mt5_status))
+        .route("/orders", post(fks_meta::api::orders::create_order))
+        .route("/orders/:order_id", get(fks_meta::api::orders::get_order))
+        .route("/orders/:order_id", delete(fks_meta::api::orders::cancel_order))
+        .route("/positions", get(fks_meta::api::positions::list_positions))
+        .route("/positions/:symbol", get(fks_meta::api::positions::get_position))
+        .route("/positions/:symbol", delete(fks_meta::api::positions::close_position))
+        .route("/market/:symbol", get(fks_meta::api::market::get_market_data))
         .with_state(app_state);
 
     // Parse address

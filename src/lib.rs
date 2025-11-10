@@ -9,6 +9,16 @@ pub mod mt5;
 
 pub use models::{MT5Order, MT5Position, MT5MarketData};
 pub use mt5::{MT5Client, MT5Plugin};
+pub use config::Settings;
+
+use std::sync::Arc;
+
+/// Application state shared across handlers
+#[derive(Clone)]
+pub struct AppState {
+    pub mt5_client: Arc<MT5Client>,
+    pub settings: Arc<Settings>,
+}
 
 /// Plugin name identifier
 pub const PLUGIN_NAME: &str = "mt5";
