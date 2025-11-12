@@ -1,0 +1,66 @@
+# Health check configuration for fks_meta
+# Use this in your Deployment spec
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fks_meta-health-config
+  namespace: fks-trading
+data:
+  liveness_probe: |
+    httpGet:
+      path: /health
+      port: 8005
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readiness_probe: |
+    httpGet:
+      path: /ready
+      port: 8005
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+---
+# Example Deployment with health checks
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fks_meta
+  namespace: fks-trading
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fks_meta
+  template:
+    metadata:
+      labels:
+        app: fks_meta
+    spec:
+      containers:
+      - name: fks_meta
+        image: nuniesmith/fks:meta-latest
+        ports:
+        - containerPort: 8005
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8005
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8005
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+
