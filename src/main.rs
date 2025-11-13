@@ -52,12 +52,12 @@ async fn main() -> anyhow::Result<()> {
         .route("/metrics", get(fks_meta::api::health::metrics))
         .route("/status", get(fks_meta::api::health::mt5_status))
         .route("/orders", post(fks_meta::api::orders::create_order))
-        .route("/orders/:order_id", get(fks_meta::api::orders::get_order))
-        .route("/orders/:order_id", delete(fks_meta::api::orders::cancel_order))
+        .route("/orders/{order_id}", get(fks_meta::api::orders::get_order))
+        .route("/orders/{order_id}", delete(fks_meta::api::orders::cancel_order))
         .route("/positions", get(fks_meta::api::positions::list_positions))
-        .route("/positions/:symbol", get(fks_meta::api::positions::get_position))
-        .route("/positions/:symbol", delete(fks_meta::api::positions::close_position))
-        .route("/market/:symbol", get(fks_meta::api::market::get_market_data))
+        .route("/positions/{symbol}", get(fks_meta::api::positions::get_position))
+        .route("/positions/{symbol}", delete(fks_meta::api::positions::close_position))
+        .route("/market/{symbol}", get(fks_meta::api::market::get_market_data))
         .with_state(app_state);
 
     // Parse address
