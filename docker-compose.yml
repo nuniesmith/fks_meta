@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: nuniesmith/fks_meta:latest
+    image: nuniesmith/fks:meta-latest
     container_name: fks_meta
     ports:
       - "8005:8005"
